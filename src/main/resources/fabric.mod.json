@@ -5,13 +5,17 @@
 	"name": "Align My Boat",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
-		"Me!"
+		"Dontknow09"
+	],
+	"contributors": [
+		"TheCritic",
+		"triphora"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/Dontknow09/AlignMyBoat"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/alignmyboat/icon.png",
 	"environment": "*",
 	"entrypoints": {
