@@ -73,6 +73,7 @@ public class AlignMyBoat implements ModInitializer {
 	private void setPlayerYaw(double yaw) {
 		final var player = client.player;
 
+		// these are warned to potentially produce null pointer exception. if playern is null (which it shouldn't be), fix ig?
 		player.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), (float) yaw, player.getPitch(0));
 		player.sendMessage(Text.translatable("orientation.success", yaw), true);
 
