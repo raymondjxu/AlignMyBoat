@@ -2,16 +2,20 @@ package me.dontknow09.alignmyboat;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AlignMyBoat implements ModInitializer {
 	public static final String MOD_ID = "alignmyboat";
-
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod id as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static KeyBinding alignBoatKeybind;
 
 	@Override
 	public void onInitialize() {
@@ -20,5 +24,57 @@ public class AlignMyBoat implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
+
+		alignBoatKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+				"key.alignboat",
+				InputUtil.Type.KEYSYM,
+				GLFW.GLFW_KEY_BACKSLASH,
+				"key.categories.movement"
+		));
+
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			while (alignBoatKeybind.wasPressed()) align(client);
+		});
+	}
+
+	private static double roundYaw(double yaw) {
+		yaw = yaw % 360;
+		if (yaw > 180 || yaw < -180) {
+			double mod = yaw % 180;
+			if (mod > 0) yaw = -180 + mod;
+			else if (mod < 0) yaw = 180 + mod;
+		}
+
+		if (yaw >= 0 && yaw < 22.5) yaw = 0;
+		if (yaw >= 22.5 && yaw < 67.5) yaw = 45;
+		if (yaw >= 67.5 && yaw < 112.5) yaw = 90;
+		if (yaw >= 112.5 && yaw < 157.5) yaw = 135;
+		if (yaw >= 157.5 && yaw <= 180) yaw = 180;
+		if (yaw <= 0 && yaw > -22.5) yaw = 0;
+		if (yaw <= -22.5 && yaw > -67.5) yaw = -45;
+		if (yaw <= -67.5 && yaw > -112.5) yaw = -90;
+		if (yaw <= -112.5 && yaw > -157.5) yaw = -135;
+		if (yaw <= -157.5 && yaw >= -180) yaw = 180;
+
+		return yaw;
+	}
+
+	private void align(MinecraftClient client) {
+		//noinspection ConstantConditions
+		double oldYaw = client.player.getHeadYaw();
+		double newYaw = roundYaw(oldYaw);
+
+		LOGGER.info("Yaw {} rounds to {}", oldYaw, newYaw);
+
+		setPlayerYaw(newYaw, client);
+	}
+
+	private void setPlayerYaw(double yaw, MinecraftClient client) {
+		final var player = client.player;
+
+		//noinspection ConstantConditions
+		player.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), (float) yaw, player.getPitch(0));
+		player.sendMessage(Text.translatable("orientation.success", yaw), true);
+
 	}
 }

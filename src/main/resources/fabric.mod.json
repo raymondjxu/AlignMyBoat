@@ -3,7 +3,7 @@
 	"id": "alignmyboat",
 	"version": "${version}",
 	"name": "Align My Boat",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Helps placing the boat along cardinal directions",
 	"authors": [
 		"Dontknow09"
 	],
@@ -12,12 +12,12 @@
 		"triphora"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
+		"homepage": "https://modrinth.com/project/alignmyboat",
 		"sources": "https://github.com/Dontknow09/AlignMyBoat"
 	},
 	"license": "MIT",
 	"icon": "assets/alignmyboat/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
 		"main": [
 			"me.dontknow09.alignmyboat.AlignMyBoat"
