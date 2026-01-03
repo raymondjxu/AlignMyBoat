@@ -16,6 +16,7 @@ public class AlignMyBoat implements ModInitializer {
 	public static final String MOD_ID = "alignmyboat";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static KeyBinding alignBoatKeybind;
+	private static final MinecraftClient client = MinecraftClient.getInstance();
 
 	@Override
 	public void onInitialize() {
@@ -33,7 +34,8 @@ public class AlignMyBoat implements ModInitializer {
 		));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			while (alignBoatKeybind.wasPressed()) align(client);
+			while (alignBoatKeybind.wasPressed()) align();
+			// this.client = client; something to consider?
 		});
 	}
 
@@ -59,20 +61,18 @@ public class AlignMyBoat implements ModInitializer {
 		return yaw;
 	}
 
-	private void align(MinecraftClient client) {
-		//noinspection ConstantConditions
-		double oldYaw = client.player.getHeadYaw();
-		double newYaw = roundYaw(oldYaw);
+	private void align() {
+		final double oldYaw = client.player.getHeadYaw();
+		final double newYaw = roundYaw(oldYaw);
 
 		LOGGER.info("Yaw {} rounds to {}", oldYaw, newYaw);
 
-		setPlayerYaw(newYaw, client);
+		setPlayerYaw(newYaw);
 	}
 
-	private void setPlayerYaw(double yaw, MinecraftClient client) {
+	private void setPlayerYaw(double yaw) {
 		final var player = client.player;
 
-		//noinspection ConstantConditions
 		player.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), (float) yaw, player.getPitch(0));
 		player.sendMessage(Text.translatable("orientation.success", yaw), true);
 
