@@ -1,5 +1,5 @@
 {
-  "orientation.align": "Snap to direction",
+  "key.alignboat": "Snap to direction",
 
-  "orientation.success": "Aligned your direction to %s!"
+  "alignboat.success": "Aligned your direction to %s!"
 }
