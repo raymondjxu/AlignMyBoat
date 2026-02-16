@@ -1,5 +1,5 @@
 {
   "key.alignboat": "Snap to direction",
-
-  "alignboat.success": "Aligned your direction to %s!"
+  "alignboat.success": "Aligned your direction to %s!",
+  "key.category.alignboat.options": "Align My Boat"
 }

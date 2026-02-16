@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +25,13 @@ public class AlignMyBoat implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		LOGGER.info("Hello Fabric world!");
+		final KeyBinding.Category keyCategory = KeyBinding.Category.create(Identifier.of("alignboat", "options"));
 
 		alignBoatKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 				"key.alignboat",
 				InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_BACKSLASH,
-				"key.categories.movement"
+				keyCategory
 		));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
