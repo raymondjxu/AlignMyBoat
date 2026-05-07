@@ -1,14 +1,14 @@
 package me.dontknow09.alignmyboat;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 public class AlignMyBoat implements ModInitializer {
 	public static final String MOD_ID = "alignmyboat";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	public static KeyBinding alignBoatKeybind;
-	private static final MinecraftClient client = MinecraftClient.getInstance();
+	public static KeyMapping alignBoatKeybind;
+	private static final Minecraft client = Minecraft.getInstance();
 
 	@Override
 	public void onInitialize() {
@@ -25,17 +25,17 @@ public class AlignMyBoat implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		final KeyBinding.Category keyCategory = KeyBinding.Category.create(Identifier.of("alignboat", "options"));
+		final KeyMapping.Category keyCategory = KeyMapping.Category.register(Identifier.fromNamespaceAndPath("alignboat", "options"));
 
-		alignBoatKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+		alignBoatKeybind = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.alignboat",
-				InputUtil.Type.KEYSYM,
+				InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_BACKSLASH,
 				keyCategory
 		));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			while (alignBoatKeybind.wasPressed()) align();
+			while (alignBoatKeybind.consumeClick()) align();
 			// this.client = client; something to consider?
 		});
 	}
@@ -63,7 +63,7 @@ public class AlignMyBoat implements ModInitializer {
 	}
 
 	private void align() {
-		final double oldYaw = client.player.getHeadYaw();
+		final double oldYaw = client.player.getYHeadRot();
 		final double newYaw = roundYaw(oldYaw);
 
 		LOGGER.info("Yaw {} rounds to {}", oldYaw, newYaw);
@@ -75,8 +75,8 @@ public class AlignMyBoat implements ModInitializer {
 		final var player = client.player;
 
 		// these are warned to potentially produce null pointer exception. if playern is null (which it shouldn't be), fix ig?
-		player.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), (float) yaw, player.getPitch(0));
-		player.sendMessage(Text.translatable("alignboat.success", yaw), true);
+		player.snapTo(player.getX(), player.getY(), player.getZ(), (float) yaw, player.getViewXRot(0));
+		player.sendSystemMessage(Component.translatable("alignboat.success", yaw));
 
 	}
 }
